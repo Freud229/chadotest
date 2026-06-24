@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ETS JEHOVAH D'ABORD</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <section id="loginScreen" class="login-screen">
+    <form id="loginForm" class="login-card">
+      <img class="login-logo" src="logo.png" alt="ETS JEHOVAH D'ABORD">
+      <strong class="login-brand">ETS JEHOVAH D'ABORD</strong>
+      <h1>Connexion</h1>
+      <label>Utilisateur<input id="loginUser" autocomplete="username" required></label>
+      <label>Mot de passe<input id="loginPassword" type="password" autocomplete="current-password" required></label>
+      <button type="submit">Se connecter</button>
+      <button id="forgotPasswordLink" class="text-button" type="button">Forget password ?</button>
+    </form>
+  </section>
+
+  <div id="forgotPasswordModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="forgotPasswordTitle">
+    <form id="forgotPasswordForm" class="modal-card">
+      <h2 id="forgotPasswordTitle">Mot de passe oublie</h2>
+      <label>ID de connexion<input id="forgotUsername" autocomplete="username" required></label>
+      <label>Mail de l'admin<input id="forgotAdminEmail" type="email" required></label>
+      <div class="actions">
+        <button id="sendForgotRequest" class="hidden" type="submit">Envoyer</button>
+        <button id="closeForgotPassword" class="ghost" type="button">Annuler</button>
+      </div>
+    </form>
+  </div>
+
+  <aside class="sidebar">
+    <div class="brand">
+      <img class="brand-logo" src="logo.png" alt="ETS JEHOVAH D'ABORD">
+      <strong>ETS JEHOVAH D'ABORD</strong>
+    </div>
+
+    <button class="nav active" data-view="dashboard">Tableau de bord</button>
+    <button class="nav" data-view="products">Produits</button>
+    <button class="nav" data-view="warehouse">Stock magasin</button>
+    <button class="nav" data-view="transfer">Transfert</button>
+    <button class="nav" data-view="shop">Stock boutique <span id="shopNotif" class="badge hidden">0</span></button>
+    <button class="nav" data-view="cashier">Caisse</button>
+    <button class="nav" data-view="sales">Ventes</button>
+    <button class="nav admin-only" data-view="users">Utilisateurs</button>
+    <button class="nav" data-view="backup">Sauvegarde</button>
+    <button id="logout" class="nav logout" type="button">Déconnexion</button>
+  </aside>
+
+  <main class="app">
+    <header class="topbar">
+      <div>
+        <h1 id="viewTitle">Tableau de bord</h1>
+        <p id="viewSubtitle">Vue globale du magasin, de la boutique et des ventes.</p>
+      </div>
+    </header>
+
+    <section id="dashboard" class="view active">
+      <div class="metrics">
+        <article>
+          <span>Stock magasin</span>
+          <strong id="metricWarehouse">0</strong>
+        </article>
+        <article>
+          <span>Stock boutique</span>
+          <strong id="metricShop">0</strong>
+        </article>
+        <article>
+          <span>Ventes du jour</span>
+          <strong id="metricSales">0 F CFA</strong>
+        </article>
+        <article>
+          <span>Tickets</span>
+          <strong id="metricTickets">0</strong>
+        </article>
+      </div>
+      <div class="panel">
+        <h2>Ruptures stock boutique</h2>
+        <div id="stockAlerts" class="empty"></div>
+      </div>
+      <div class="dashboard-charts">
+        <div class="panel">
+          <h2>Stock magasin par produit</h2>
+          <div id="warehouseChart" class="bar-chart"></div>
+        </div>
+        <div class="panel">
+          <h2>Stock boutique par produit</h2>
+          <div id="shopChart" class="bar-chart"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="products" class="view">
+      <div class="panel">
+        <h2>Créer un produit</h2>
+        <form id="productForm" class="grid-form">
+          <label>Code<input id="productCode" readonly required></label>
+          <label>Nom<input id="productName" required></label>
+          <label>Prix vente<input id="productSell" type="number" min="0" required></label>
+          <button type="submit">Enregistrer produit</button>
+        </form>
+      </div>
+      <div class="panel">
+        <h2>Liste des produits</h2>
+        <div id="productsTable"></div>
+      </div>
+    </section>
+
+    <section id="warehouse" class="view">
+      <div class="panel">
+        <h2>Entrée stock magasin</h2>
+        <form id="warehouseForm" class="inline-form">
+          <select id="warehouseProduct" required></select>
+          <input id="warehouseQty" type="number" min="1" placeholder="Quantité" required>
+          <button type="submit">Ajouter au magasin</button>
+        </form>
+      </div>
+      <div class="panel">
+        <h2>Stock magasin</h2>
+        <div id="warehouseTable"></div>
+      </div>
+    </section>
+
+    <section id="transfer" class="view">
+      <div class="panel">
+        <h2>Préparer un envoi vers la boutique</h2>
+        <form id="transferForm" class="inline-form">
+          <select id="transferProduct" required></select>
+          <input id="transferQty" type="number" min="1" placeholder="Quantité" required>
+          <button type="submit">Ajouter à l'envoi</button>
+        </form>
+      </div>
+      <div class="panel">
+        <h2>Produits à envoyer</h2>
+        <div id="transferDraftTable"></div>
+        <div class="actions">
+          <button id="sendTransfer" type="button">Envoyer à la boutique</button>
+          <button id="clearTransferDraft" type="button" class="ghost">Vider l'envoi</button>
+        </div>
+      </div>
+      <div class="panel">
+        <h2>Historique transferts</h2>
+        <div id="transfersTable"></div>
+      </div>
+    </section>
+
+    <section id="shop" class="view">
+      <div class="panel">
+        <h2>Réceptions en attente</h2>
+        <div id="pendingTransfersTable"></div>
+      </div>
+      <div class="panel">
+        <h2>Stock boutique</h2>
+        <div id="shopTable"></div>
+      </div>
+    </section>
+
+    <section id="cashier" class="view">
+      <div class="cashier-layout">
+        <div class="panel cashier-product">
+          <h2>Produit</h2>
+          <form id="cartForm" class="cart-form">
+            <label>Produit en boutique<select id="cartProduct" required></select></label>
+            <div id="cartProductInfo" class="product-info">
+              <span>Sélectionner un produit</span>
+            </div>
+            <label>Quantité<input id="cartQty" type="number" min="1" required></label>
+            <button type="submit">Ajouter au panier</button>
+          </form>
+          <div id="cartInfo" class="hint"></div>
+        </div>
+        <div class="panel cashier-cart">
+          <div class="panel-head">
+            <h2>Panier</h2>
+            <button id="clearCart" type="button" class="ghost">Vider</button>
+          </div>
+          <div id="cartTable"></div>
+        </div>
+        <div class="panel cashier-payment">
+          <h2>Paiement</h2>
+          <div class="payment-summary">
+            <div>
+              <span>Total</span>
+              <strong id="cartTotal">0 F CFA</strong>
+            </div>
+            <div>
+              <span>Monnaie</span>
+              <strong id="changeDue">0 F CFA</strong>
+            </div>
+          </div>
+          <form id="saleForm" class="sale-form">
+            <label>Mode de paiement
+              <select id="paymentMode" required>
+                <option value="">Choisir</option>
+                <option>Espèces</option>
+                <option>MoMo</option>
+              </select>
+            </label>
+            <label id="cashPaidField">Montant payé<input id="paidAmount" type="number" min="0" placeholder="0"></label>
+            <div id="momoBox" class="momo-box hidden">
+              <label>Numéro MoMo<input id="momoNumber" inputmode="numeric" placeholder="Ex: 97000000"></label>
+              <label>Référence paiement<input id="momoReference" placeholder="Référence transaction"></label>
+              <div class="hint">Le montant MoMo à confirmer est le total du panier.</div>
+            </div>
+            <button type="submit">Valider la vente</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section id="sales" class="view">
+      <div class="panel">
+        <h2>Historique ventes</h2>
+        <div id="salesTable"></div>
+      </div>
+      <div id="invoicePreview" class="invoice hidden"></div>
+    </section>
+
+    <section id="users" class="view">
+      <div class="panel">
+        <h2>Ajouter un utilisateur</h2>
+        <form id="userForm" class="grid-form">
+          <label>Nom complet<input id="newUserName" required></label>
+          <label>Mail utilisateur<input id="newUserEmail" type="email" required></label>
+          <label>Identifiant<input id="newUsername" readonly required></label>
+          <label>Mot de passe<input id="newUserPassword" type="password" required></label>
+          <label>Rôle
+            <select id="newUserRole" required>
+              <option value="">Choisir</option>
+              <option>Administrateur</option>
+              <option>Magasinier</option>
+              <option>Caissier</option>
+            </select>
+          </label>
+          <button type="submit">Créer utilisateur</button>
+        </form>
+      </div>
+      <div class="panel">
+        <h2>Liste des utilisateurs</h2>
+        <div id="usersTable"></div>
+      </div>
+    </section>
+
+    <section id="backup" class="view">
+      <div id="localBackupPanel" class="panel">
+        <h2>Sauvegarde locale</h2>
+        <div class="actions">
+          <button id="downloadBackup" type="button">Télécharger sauvegarde</button>
+          <label id="restoreBackupButton" class="file-button">
+            Restaurer sauvegarde
+            <input id="restoreBackup" type="file" accept="application/json">
+          </label>
+        </div>
+      </div>
+      <div id="exportBackupPanel" class="panel">
+        <h2>Exports pour Excel</h2>
+        <div class="actions">
+          <button id="exportProducts" type="button">Exporter produits CSV</button>
+          <button id="exportStocks" type="button">Exporter stocks CSV</button>
+          <button id="exportSales" type="button">Exporter ventes CSV</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

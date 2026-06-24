@@ -1,0 +1,38 @@
+{
+  "session": null,
+  "users": [
+    {
+      "name": "Administrateur",
+      "email": "",
+      "username": "admin",
+      "password": "1234@dmin100%",
+      "role": "Administrateur"
+    }
+  ],
+  "products": [
+    {
+      "code": "PUMP_075HP",
+      "name": "Pump interdab 0.75HP",
+      "sellPrice": 30000
+    },
+    {
+      "code": "PUMP_1HP",
+      "name": "Pump interdab 1HP",
+      "sellPrice": 52200
+    }
+  ],
+  "warehouse": {
+    "PUMP_075HP": 191,
+    "PUMP_1HP": 48
+  },
+  "shop": {
+    "PUMP_075HP": 0,
+    "PUMP_1HP": 0
+  },
+  "transferDraft": [],
+  "transfers": [],
+  "hiddenInvoiceTickets": [],
+  "sales": [],
+  "cart": [],
+  "journal": []
+}
